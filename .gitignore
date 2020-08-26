@@ -1,0 +1,9 @@
+.gradle
+build
+.project
+.settings
+.classpath
+bin/*
+.idea/**/*
+*.iml
+spring-shell.log
