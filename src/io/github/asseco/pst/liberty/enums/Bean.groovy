@@ -7,8 +7,9 @@ package io.github.asseco.pst.liberty.enums
  * @version 1.0.0
  */
 enum Bean {
-    APPLICATION("WebSphere:service=com.ibm.websphere.application.ApplicationMBean,name="),
-    FILE_TRANSFER('WebSphere:feature=restConnector,type=FileTransfer,name=FileTransfer')
+    APPLICATION( "WebSphere:service=com.ibm.websphere.application.ApplicationMBean,name="),
+    FILE_TRANSFER("WebSphere:feature=restConnector,type=FileTransfer,name=FileTransfer"),
+    FILE_SERVICE("WebSphere:feature=restConnector,type=FileService,name=FileService")
 
     private String descriptor;
 
