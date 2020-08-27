@@ -57,7 +57,7 @@ interface IDeployerService {
     /**
      * Gets a list of installed artifacts for the given package
      * @param pkg The package
-     * @return The list of installed artifacts 
+     * @return The list of installed artifacts
      * @throws PackageException
      */
     List<String> getInstalledArtifactsForPackage(Package pkg) throws PackageException
