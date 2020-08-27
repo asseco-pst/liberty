@@ -1,13 +1,8 @@
 package io.github.asseco.pst.liberty.services
 
-import io.github.asseco.pst.liberty.exceptions.ArtifactGenericException
-import io.github.asseco.pst.liberty.exceptions.ArtifactInstallException
-import io.github.asseco.pst.liberty.exceptions.ArtifactStartException
-import io.github.asseco.pst.liberty.exceptions.ArtifactStopException
-import io.github.asseco.pst.liberty.exceptions.ArtifactUninstallException
-import io.github.asseco.pst.liberty.exceptions.PackageException
-import io.github.asseco.pst.liberty.exceptions.ProfileConnectionException
+import io.github.asseco.pst.liberty.exceptions.*
 import io.github.asseco.pst.liberty.models.Artifact
+import io.github.asseco.pst.liberty.models.Package
 
 /**
  * Interface that states the available operations for deployment.
@@ -36,6 +31,13 @@ interface IDeployerService {
      * @throws ArtifactStartException
      */
     void startArtifact(Artifact artifact) throws ArtifactStartException
+
+    /**
+     * Restarts the artifact on the Liberty profile
+     * @param artifact
+     * @throws ArtifactStopException
+     */
+    void restartArtifact(Artifact artifact) throws ArtifactStopException
 
     /**
      * Stops the artifact on the Liberty profile
