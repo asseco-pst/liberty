@@ -10,22 +10,29 @@ import io.github.asseco.pst.liberty.enums.Type
  */
 class Artifact {
     private Type type
-    private final Package pkg
     private final File sourcePath
-    private String name
+    private final String name
+    private final String baseName
 
-    Artifact(File sourcePath, Package pkg) {
-        this.sourcePath = sourcePath
-        this.pkg = pkg
-        this.name = sourcePath.getAbsoluteFile().getName()
-        this.type = getExtension(this.name) as Type
+    Artifact(String sourcePath) {
+        this.sourcePath = new File(sourcePath)
+        this.name = this.sourcePath.getAbsoluteFile().getName()
+        this.baseName = getBasename(this.name)
+        this.type = Type.valueOf(getExtension(this.name).toUpperCase())
     }
 
-    private static String getExtension(String name) {
-        if (name.lastIndexOf(".") > 0) {
-            return name.substring(name.lastIndexOf(".") + 1)
+    private static String getExtension(String filename) {
+        if (filename.lastIndexOf(".") > 0) {
+            return filename.substring(filename.lastIndexOf(".") + 1)
         }
         return ''
+    }
+
+    private static String getBasename(String filename) {
+        if (filename.lastIndexOf(".") > 0) {
+            return filename.substring(0, filename.lastIndexOf("."))
+        }
+        return filename
     }
 
     Type getType() {
@@ -40,7 +47,7 @@ class Artifact {
         return name
     }
 
-    Package getPackage() {
-        return pkg
+    String getBaseName() {
+        return baseName
     }
 }

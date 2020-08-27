@@ -8,11 +8,11 @@ package io.github.asseco.pst.liberty.models
  */
 class Profile {
     private final String hostname
-    private final String port
+    private final Integer port
     private final String username
     private final String password
 
-    Profile(String hostname, String port, String username, String password) {
+    Profile(String hostname, Integer port, String username, String password) {
         this.hostname = hostname
         this.port = port
         this.username = username

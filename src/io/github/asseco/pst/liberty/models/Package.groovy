@@ -1,7 +1,4 @@
 package io.github.asseco.pst.liberty.models
-
-import io.github.asseco.pst.liberty.enums.Type
-
 /**
  * Class that stores the package information
  *
