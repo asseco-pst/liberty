@@ -30,9 +30,8 @@ final class DeployService implements IDeployService {
         if (this.artifact) {
             this.deployStrategy.installArtifact(this.artifact)
             return this
-        } else {
-            throw new ArtifactInstallException("No artifact was defined")
         }
+        throw new ArtifactInstallException("No artifact was defined")
     }
 
     @Override
@@ -40,9 +39,8 @@ final class DeployService implements IDeployService {
         if (this.artifact) {
             this.deployStrategy.uninstallArtifact(this.artifact)
             return this
-        } else {
-            throw new ArtifactUninstallException("No artifact was defined")
         }
+        throw new ArtifactUninstallException("No artifact was defined")
     }
 
     @Override
@@ -50,9 +48,8 @@ final class DeployService implements IDeployService {
         if (this.artifact) {
             this.deployStrategy.startArtifact(this.artifact)
             return this
-        } else {
-            throw new ArtifactStartException("No artifact was defined")
         }
+        throw new ArtifactStartException("No artifact was defined")
     }
 
     @Override
@@ -60,9 +57,8 @@ final class DeployService implements IDeployService {
         if (this.artifact) {
             this.deployStrategy.restartArtifact(this.artifact)
             return this
-        } else {
-            throw new ArtifactStopException("No artifact was defined")
         }
+        throw new ArtifactStopException("No artifact was defined")
     }
 
     @Override
@@ -70,27 +66,24 @@ final class DeployService implements IDeployService {
         if (this.artifact) {
             this.deployStrategy.stopArtifact(this.artifact)
             return this
-        } else {
-            throw new ArtifactStopException("No artifact was defined")
         }
+        throw new ArtifactStopException("No artifact was defined")
     }
 
     @Override
     boolean isArtifactInstalled() throws ArtifactGenericException {
         if (this.artifact) {
             return this.deployStrategy.isArtifactInstalled(this.artifact)
-        } else {
-            throw new ArtifactGenericException("No artifact was defined")
         }
+        throw new ArtifactGenericException("No artifact was defined")
     }
 
     @Override
     List<String> getInstalledArtifactsForPackage() throws PackageException {
         if (this.pkg) {
             return this.deployStrategy.getInstalledArtifactsForPackage(this.pkg)
-        } else {
-            throw new PackageException("No package was defined")
         }
+        throw new PackageException("No package was defined")
     }
 
     @Override
