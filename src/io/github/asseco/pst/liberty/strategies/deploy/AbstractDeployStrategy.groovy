@@ -1,4 +1,4 @@
-package io.github.asseco.pst.liberty.services
+package io.github.asseco.pst.liberty.strategies.deploy
 
 import io.github.asseco.pst.liberty.models.Profile
 
@@ -12,11 +12,11 @@ import java.security.cert.X509Certificate
  * @date 26/08/2020
  * @version 1.0.0
  */
-abstract class AbstractDeployer implements IDeployerService {
+abstract class AbstractDeployStrategy implements IDeployStrategy {
     protected static String LIBERTY_DEPLOYMENT_PATH = '${server.output.dir}/dropins'
     protected final Profile profile
 
-    AbstractDeployer(Profile profile, boolean acceptInsecureCertificates = false) {
+    AbstractDeployStrategy(Profile profile, boolean acceptInsecureCertificates = false) {
         this.profile = profile
 
         if (acceptInsecureCertificates) {

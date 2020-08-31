@@ -1,4 +1,4 @@
-package io.github.asseco.pst.liberty.services
+package io.github.asseco.pst.liberty.strategies.deploy
 
 import io.github.asseco.pst.liberty.exceptions.*
 import io.github.asseco.pst.liberty.models.Artifact
@@ -10,7 +10,7 @@ import io.github.asseco.pst.liberty.models.Package
  * @date 26/08/2020
  * @version 1.0.0
  */
-interface IDeployerService {
+interface IDeployStrategy {
     /**
      * Installs the artifact on the Liberty profile
      * @param artifact The artifact to install
@@ -61,6 +61,13 @@ interface IDeployerService {
      * @throws PackageException
      */
     List<String> getInstalledArtifactsForPackage(Package pkg) throws PackageException
+
+    /**
+     * Gets a list of installed artifacts
+     * @return The list of installed artifacts
+     * @throws PackageException
+     */
+    List<String> getInstalledArtifacts() throws PackageException
 
     /**
      * Connects to the Liberty profile

@@ -1,4 +1,4 @@
-package io.github.asseco.pst.liberty.services
+package io.github.asseco.pst.liberty.strategies.deploy
 
 import com.ibm.websphere.application.ApplicationMBean
 import com.ibm.websphere.filetransfer.FileServiceMXBean
@@ -22,7 +22,7 @@ import javax.management.remote.JMXServiceURL
  * @date 26/08/2020
  * @version 1.0.0
  */
-class JMXLiberty extends AbstractDeployer {
+final class JMXDeployStrategy extends AbstractDeployStrategy {
     private static String JMX_CONNECTION_PROTOCOL = 'service:jmx:rest://'
     private static String JMX_CONNECTION_ENDPOINT = 'IBMJMXConnectorREST'
     private static String JMX_REMOTE_PROTOCOL_PROVIDER_PKGS = 'jmx.remote.protocol.provider.pkgs'
@@ -34,7 +34,7 @@ class JMXLiberty extends AbstractDeployer {
     private JMXConnector connector
     private MBeanServerConnection client
 
-    JMXLiberty(Profile profile, boolean acceptInsecureCertificates = false) {
+    JMXDeployStrategy(Profile profile, boolean acceptInsecureCertificates = false) {
         super(profile, acceptInsecureCertificates)
     }
 
@@ -164,6 +164,30 @@ class JMXLiberty extends AbstractDeployer {
             throw exception
         } catch (Exception exception) {
             throw new PackageException("Failed to list installed artifacts for package ${pkg.name} due to: ${exception.getMessage()}")
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    List<String> getInstalledArtifacts() throws PackageException {
+        try {
+            ObjectName mXBeanObject = new ObjectName(Bean.FILE_SERVICE.toString())
+            if (!this.client.isRegistered(mXBeanObject)) {
+                throw new PackageException("Failed to get installed artifacts due to: File Service MXBean is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
+            }
+            FileServiceMXBean fileServiceMXBean = JMX.newMXBeanProxy(this.client, mXBeanObject, FileServiceMXBean.class)
+            FileServiceMXBean.MetaData[] artifacts = fileServiceMXBean.getDirectoryEntries(LIBERTY_DEPLOYMENT_PATH, false, FileServiceMXBean.REQUEST_OPTIONS_ALL)
+
+            return Arrays.stream(artifacts)
+                    .map({ FileServiceMXBean.MetaData filteredArtifact ->
+                        (new File(filteredArtifact.fileName)).getName()
+                    })
+                    .collect()
+
+        } catch (PackageException exception) {
+            throw exception
+        } catch (Exception exception) {
+            throw new PackageException("Failed to list installed artifacts due to: ${exception.getMessage()}")
         }
     }
 
