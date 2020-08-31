@@ -1,31 +1,35 @@
+import io.github.asseco.pst.liberty.builders.DeployBuilder
 import io.github.asseco.pst.liberty.enums.Strategy
-import io.github.asseco.pst.liberty.models.Artifact
-import io.github.asseco.pst.liberty.models.Package
-import io.github.asseco.pst.liberty.models.Profile
-import io.github.asseco.pst.liberty.services.DeployerService
-import io.github.asseco.pst.liberty.services.IDeployerService
+import io.github.asseco.pst.liberty.services.IDeployService
 
 class Main {
     static void main(String[] args) {
-        Artifact artifact = new Artifact("C:/Users/10000102/dev/resources/artifacts/hardware-manager-ear___v2.1.0.ear")
-        Package pkg = new Package('hardware-manager')
-
-        Profile profile = new Profile('localhost', 9443, 'admin', 'admin')
-        IDeployerService deployerService = new DeployerService(profile, Strategy.JMX, true)
-
         try {
-            deployerService.connect()
-            deployerService.installArtifact(artifact)
-            Thread.sleep(2000)
-            deployerService.startArtifact(artifact)
+            DeployBuilder deployBuilder = new DeployBuilder()
 
-            deployerService.getInstalledArtifactsForPackage(pkg).forEach({
-                System.out.println(it)
-            })
+            IDeployService installService = deployBuilder
+                    .setProfileDetails('localhost', 9443, 'admin', 'admin')
+                    .setDeployStrategy(Strategy.JMX, true)
+                    .setArtifactPath("C:/Users/10000102/dev/resources/artifacts/hardware-manager-ear___v2.1.0.ear")
+                    .setPackageName('hardware-manager')
+                    .build()
 
-            deployerService.stopArtifact(artifact)
-            Thread.sleep(2000)
-            deployerService.uninstallArtifact(artifact)
+            installService
+                    .connect()
+                    .installArtifact()
+                    .await(2000)
+                    .restartArtifact()
+                    .disconnect()
+
+
+            IDeployService listService = deployBuilder
+                    .setProfileDetails('localhost', 9443, 'admin', 'admin')
+                    .setDeployStrategy(Strategy.JMX, true)
+                    .build()
+
+            System.out.println(listService.connect().getInstalledArtifacts().toString())
+            listService.disconnect()
+
         } catch (Exception exception) {
             exception.printStackTrace()
         }
