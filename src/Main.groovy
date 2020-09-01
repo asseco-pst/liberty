@@ -9,7 +9,7 @@ class Main {
 
             IDeployService installService = deployBuilder
                     .setProfileDetails('localhost', 9443, 'admin', 'admin')
-                    .setDeployStrategy(Strategy.CUSTOM, true)
+                    .setDeployStrategy(Strategy.Custom, true)
                     .setArtifactPath("C:/Users/10000102/dev/resources/artifacts/hardware-manager-ear___v2.1.0.ear")
                     .setPackageName('hardware-manager')
                     .build()
@@ -18,7 +18,6 @@ class Main {
 
             System.out.println(installService.await(2000).getInstalledArtifacts().toString())
             System.out.println(installService.await(2000).getServerInformation().toString())
-            installService.updateArtifactAutoStart("hardware-manager-ear___v2.1.0", true)
 
             installService.stopArtifact().await(2000).uninstallArtifact().disconnect()
 
