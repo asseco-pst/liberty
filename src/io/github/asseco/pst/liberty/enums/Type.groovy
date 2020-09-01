@@ -11,6 +11,9 @@ enum Type {
     WAR('war'),
     JAR('jar'),
     RAR('rar'),
+    EBA('eba'),
+    ESA('esa'),
+    SPRING('spring'),
     EMPTY('')
 
     private final String type

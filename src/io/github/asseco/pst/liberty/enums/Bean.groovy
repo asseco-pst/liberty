@@ -8,6 +8,7 @@ package io.github.asseco.pst.liberty.enums
  */
 enum Bean {
     APPLICATION( "WebSphere:service=com.ibm.websphere.application.ApplicationMBean,name="),
+    SERVER_INFORMATION( "WebSphere:feature=kernel,name=ServerInfo"),
     FILE_TRANSFER("WebSphere:feature=restConnector,type=FileTransfer,name=FileTransfer"),
     FILE_SERVICE("WebSphere:feature=restConnector,type=FileService,name=FileService")
 

@@ -13,12 +13,14 @@ class Artifact {
     private final File sourcePath
     private final String name
     private final String baseName
+    private final boolean autoStart
 
-    Artifact(String sourcePath) {
+    Artifact(String sourcePath, boolean autoStart = false) {
         this.sourcePath = new File(sourcePath)
         this.name = this.sourcePath.getAbsoluteFile().getName()
         this.baseName = getBasename(this.name)
         this.type = Type.valueOf(getExtension(this.name).toUpperCase())
+        this.autoStart = autoStart
     }
 
     private static String getExtension(String filename) {
@@ -49,5 +51,9 @@ class Artifact {
 
     String getBaseName() {
         return baseName
+    }
+
+    boolean getAutoStart() {
+        return autoStart
     }
 }
