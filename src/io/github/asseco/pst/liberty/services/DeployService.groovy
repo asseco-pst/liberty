@@ -1,5 +1,6 @@
 package io.github.asseco.pst.liberty.services
 
+import io.github.asseco.pst.liberty.enums.Server
 import io.github.asseco.pst.liberty.exceptions.*
 import io.github.asseco.pst.liberty.models.Artifact
 import io.github.asseco.pst.liberty.models.Package
@@ -89,6 +90,11 @@ final class DeployService implements IDeployService {
     @Override
     List<String> getInstalledArtifacts() throws PackageException {
         return this.deployStrategy.getInstalledArtifacts()
+    }
+
+    @Override
+    Map<Server, String> getServerInformation() throws ServerInformationException {
+        return this.deployStrategy.getServerInformation()
     }
 
     @Override

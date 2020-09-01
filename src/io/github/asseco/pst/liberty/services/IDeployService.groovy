@@ -1,5 +1,6 @@
 package io.github.asseco.pst.liberty.services
 
+import io.github.asseco.pst.liberty.enums.Server
 import io.github.asseco.pst.liberty.exceptions.*
 
 interface IDeployService {
@@ -53,6 +54,13 @@ interface IDeployService {
      * @throws io.github.asseco.pst.liberty.exceptions.PackageException
      */
     List<String> getInstalledArtifacts() throws PackageException
+
+    /**
+     * Gets a list of server properties
+     * @return The list of server properties
+     * @throws ServerInformationException
+     */
+    Map<Server, String> getServerInformation() throws ServerInformationException
 
     /**
      * Connects to the Liberty profile
