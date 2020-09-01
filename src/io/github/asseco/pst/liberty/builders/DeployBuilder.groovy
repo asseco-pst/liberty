@@ -35,8 +35,8 @@ class DeployBuilder {
         throw new BuilderException("You need to set the profile first!")
     }
 
-    DeployBuilder setArtifactPath(String sourcePath) {
-        this.artifact = new Artifact(sourcePath)
+    DeployBuilder setArtifactPath(String sourcePath, boolean autoStart = false) {
+        this.artifact = new Artifact(sourcePath, autoStart)
         return this
     }
 
