@@ -13,7 +13,6 @@ import java.security.cert.X509Certificate
  * @version 1.0.0
  */
 abstract class AbstractDeployStrategy implements IDeployStrategy {
-    protected static String LIBERTY_DEPLOYMENT_PATH = '${server.output.dir}/dropins'
     protected final Profile profile
 
     AbstractDeployStrategy(Profile profile, boolean acceptInsecureCertificates = false) {
