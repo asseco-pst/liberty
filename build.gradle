@@ -1,9 +1,10 @@
 plugins {
     id 'groovy'
     id 'java'
+    id 'com.bmuschko.nexus' version '2.3.1'
 }
 
-group = 'com.asseco.pst.devops'
+group = 'io.github.asseco.pst'
 version = '1.0-SNAPSHOT'
 
 repositories {
@@ -29,4 +30,43 @@ sourceSets {
 dependencies {
     implementation 'org.codehaus.groovy:groovy:3.0.5'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+modifyPom {
+    project {
+        name 'liberty'
+        description 'A library that allows managing artifacts in a Liberty server'
+        url 'https://github.com/asseco-pst/liberty'
+        inceptionYear '2020'
+
+        scm {
+            url 'https://github.com/asseco-pst/liberty'
+            connection 'scm:https://github.com/asseco-pst/liberty.git'
+            developerConnection 'scm:git://github.com/asseco-pst/liberty.git'
+        }
+
+        licenses {
+            license {
+                name 'MIT License'
+                url 'https://opensource.org/licenses/MIT'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'assecopst'
+                name 'Asseco PST'
+                email 'servicos.dcs@pst.asseco.com'
+                organization 'Asseco PST'
+                organizationUrl 'https://www.pst.asseco.com'
+            }
+        }
+    }
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
 }
