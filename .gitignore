@@ -7,4 +7,3 @@ bin/*
 .idea/**/*
 *.iml
 spring-shell.log
-gradle.properties
