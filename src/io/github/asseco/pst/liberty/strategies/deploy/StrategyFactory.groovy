@@ -19,8 +19,10 @@ final class StrategyFactory {
 
     IDeployStrategy getStrategy(Strategy strategy, boolean acceptInsecureCertificates = false) {
         switch (strategy) {
-            case Strategy.JMX:
-                return new JMXDeployStrategy(this.profile, acceptInsecureCertificates)
+            case Strategy.Dropins:
+                return new DropinsDeployStrategy(this.profile, acceptInsecureCertificates)
+            case Strategy.Custom:
+                return new CustomDeployStrategy(this.profile, acceptInsecureCertificates)
             default:
                 throw new StrategyNotSupportedException("The provided strategy is still not supported")
         }

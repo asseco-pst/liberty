@@ -1,5 +1,6 @@
 package io.github.asseco.pst.liberty.strategies.deploy
 
+import io.github.asseco.pst.liberty.enums.Server
 import io.github.asseco.pst.liberty.exceptions.*
 import io.github.asseco.pst.liberty.models.Artifact
 import io.github.asseco.pst.liberty.models.Package
@@ -68,6 +69,13 @@ interface IDeployStrategy {
      * @throws PackageException
      */
     List<String> getInstalledArtifacts() throws PackageException
+
+    /**
+     * Gets a list of server properties
+     * @return The list of server properties
+     * @throws ServerInformationException
+     */
+    Map<Server, String> getServerInformation() throws ServerInformationException
 
     /**
      * Connects to the Liberty profile
