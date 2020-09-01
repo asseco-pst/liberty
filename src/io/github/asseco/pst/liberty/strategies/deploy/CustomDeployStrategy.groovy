@@ -5,6 +5,7 @@ import com.ibm.websphere.filetransfer.FileTransferMBean
 import io.github.asseco.pst.liberty.builders.ConfigFileBuilder
 import io.github.asseco.pst.liberty.enums.Bean
 import io.github.asseco.pst.liberty.enums.Server
+import io.github.asseco.pst.liberty.exceptions.ArtifactGenericException
 import io.github.asseco.pst.liberty.exceptions.ArtifactInstallException
 import io.github.asseco.pst.liberty.exceptions.ArtifactUninstallException
 import io.github.asseco.pst.liberty.models.Artifact
@@ -56,19 +57,78 @@ final class CustomDeployStrategy extends AbstractJMXDeployStrategy {
     @Override
     void uninstallArtifact(Artifact artifact) throws ArtifactUninstallException {
         try {
-            ObjectName mBeanObject = new ObjectName(Bean.FILE_TRANSFER.toString())
-            if (!this.client.isRegistered(mBeanObject)) {
-                throw new ArtifactUninstallException("Failed to uninstall artifact ${artifact.name} due to: File Transfer MBean is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
-            }
-            FileTransferMBean fileTransferMBean = JMX.newMBeanProxy(this.client, mBeanObject, FileTransferMBean.class)
-
-            fileTransferMBean.deleteFile("${CUSTOM_DEPLOYMENT_PATH}/${artifact.name}")
-            fileTransferMBean.deleteFile("${CUSTOM_CONFIG_DROPINS_PATH}/${artifact.baseName}.xml")
-
+            this.uninstallArtifact(artifact.name)
         } catch (ArtifactUninstallException exception) {
             throw exception
         } catch (Exception exception) {
             throw new ArtifactUninstallException("Failed to uninstall artifact ${artifact.name} due to: ${exception.getMessage()}")
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    void uninstallArtifact(String name) throws ArtifactUninstallException {
+        try {
+            ObjectName mBeanObject = new ObjectName(Bean.FILE_TRANSFER.toString())
+            if (!this.client.isRegistered(mBeanObject)) {
+                throw new ArtifactUninstallException("Failed to uninstall artifact ${name} due to: File Transfer MBean is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
+            }
+            FileTransferMBean fileTransferMBean = JMX.newMBeanProxy(this.client, mBeanObject, FileTransferMBean.class)
+
+            fileTransferMBean.deleteFile("${CUSTOM_DEPLOYMENT_PATH}/${name}")
+            fileTransferMBean.deleteFile("${CUSTOM_CONFIG_DROPINS_PATH}/${getBasename(name)}.xml")
+
+        } catch (ArtifactUninstallException exception) {
+            throw exception
+        } catch (Exception exception) {
+            throw new ArtifactUninstallException("Failed to uninstall artifact ${name} due to: ${exception.getMessage()}")
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    void updateArtifactAutoStart(Artifact artifact) throws ArtifactGenericException {
+        try {
+            this.updateArtifactAutoStart(artifact.baseName, artifact.autoStart)
+        } catch (ArtifactGenericException exception) {
+            throw exception
+        } catch (Exception exception) {
+            throw new ArtifactGenericException("Failed to update artifact ${artifact.baseName} due to: ${exception.getMessage()}")
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    void updateArtifactAutoStart(String baseName, boolean enableAutoStart) throws ArtifactGenericException {
+        File configFile = null
+
+        try {
+            ObjectName mBeanObject = new ObjectName(Bean.FILE_TRANSFER.toString())
+            if (!this.client.isRegistered(mBeanObject)) {
+                throw new ArtifactInstallException("Failed to update artifact ${baseName} due to: File Transfer MBean is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
+            }
+
+            FileTransferMBean fileTransferMBean = JMX.newMBeanProxy(this.client, mBeanObject, FileTransferMBean.class)
+            fileTransferMBean.downloadFile("${CUSTOM_CONFIG_DROPINS_PATH}/${baseName}.xml", "${baseName}.xml")
+
+            configFile = new File("${baseName}.xml")
+            configFile = ConfigFileBuilder.updateArtifactConfigFileAttribute(configFile, "application", "autoStart", "true")
+            fileTransferMBean.uploadFile(configFile.absolutePath, "${CUSTOM_CONFIG_DROPINS_PATH}/${baseName}.xml", false)
+
+        } catch (ArtifactGenericException exception) {
+            throw exception
+        } catch (Exception exception) {
+            throw new ArtifactGenericException("Failed to update artifact ${baseName} due to: ${exception.getMessage()}")
+        } finally {
+            /*Deletes the configuration file to avoid garbage in the system*/
+            configFile?.exists() ? configFile.delete() : null
+        }
+    }
+
+    private static String getBasename(String filename) {
+        if (filename.lastIndexOf(".") > 0) {
+            return filename.substring(0, filename.lastIndexOf("."))
+        }
+        return filename
     }
 }

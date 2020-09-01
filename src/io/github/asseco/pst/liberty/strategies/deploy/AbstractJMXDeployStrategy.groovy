@@ -5,6 +5,7 @@ import com.ibm.websphere.filetransfer.FileServiceMXBean
 import com.ibm.websphere.kernel.server.ServerInfoMBean
 import io.github.asseco.pst.liberty.enums.Bean
 import io.github.asseco.pst.liberty.enums.Server
+import io.github.asseco.pst.liberty.enums.State
 import io.github.asseco.pst.liberty.exceptions.*
 import io.github.asseco.pst.liberty.models.Artifact
 import io.github.asseco.pst.liberty.models.Package
@@ -55,9 +56,21 @@ abstract class AbstractJMXDeployStrategy implements IDeployStrategy {
     @Override
     void startArtifact(Artifact artifact) throws ArtifactStartException {
         try {
-            ObjectName mBeanObject = new ObjectName("${Bean.APPLICATION.toString()}${artifact.baseName}")
+            this.startArtifact(artifact.baseName)
+        } catch (ArtifactStartException exception) {
+            throw exception
+        } catch (Exception exception) {
+            throw new ArtifactStartException("Failed to start artifact ${artifact.baseName} due to: ${exception.getMessage()}")
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    void startArtifact(String baseName) throws ArtifactStartException {
+        try {
+            ObjectName mBeanObject = new ObjectName("${Bean.APPLICATION.toString()}${baseName}")
             if (!this.client.isRegistered(mBeanObject)) {
-                throw new ArtifactStartException("Failed to start artifact ${artifact.name} due to: Artifact is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
+                throw new ArtifactStartException("Failed to start artifact ${baseName} due to: Artifact is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
             }
             ApplicationMBean applicationMBean = JMX.newMBeanProxy(this.client, mBeanObject, ApplicationMBean.class)
             applicationMBean.start()
@@ -65,7 +78,7 @@ abstract class AbstractJMXDeployStrategy implements IDeployStrategy {
         } catch (ArtifactStartException exception) {
             throw exception
         } catch (Exception exception) {
-            throw new ArtifactStartException("Failed to start artifact ${artifact.name} due to: ${exception.getMessage()}")
+            throw new ArtifactStartException("Failed to start artifact ${baseName} due to: ${exception.getMessage()}")
         }
     }
 
@@ -73,13 +86,7 @@ abstract class AbstractJMXDeployStrategy implements IDeployStrategy {
     @Override
     void restartArtifact(Artifact artifact) throws ArtifactStopException {
         try {
-            ObjectName mBeanObject = new ObjectName("${Bean.APPLICATION.toString()}${artifact.baseName}")
-            if (!this.client.isRegistered(mBeanObject)) {
-                throw new ArtifactRestartException("Failed to restart artifact ${artifact.name} due to: Artifact is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
-            }
-            ApplicationMBean applicationMBean = JMX.newMBeanProxy(this.client, mBeanObject, ApplicationMBean.class)
-            applicationMBean.restart()
-
+            this.restartArtifact(artifact.baseName)
         } catch (ArtifactRestartException exception) {
             throw exception
         } catch (Exception exception) {
@@ -89,15 +96,27 @@ abstract class AbstractJMXDeployStrategy implements IDeployStrategy {
 
     /** {@inheritDoc} */
     @Override
-    void stopArtifact(Artifact artifact) throws ArtifactStopException {
+    void restartArtifact(String baseName) throws ArtifactStopException {
         try {
-            ObjectName mBeanObject = new ObjectName("${Bean.APPLICATION.toString()}${artifact.baseName}")
+            ObjectName mBeanObject = new ObjectName("${Bean.APPLICATION.toString()}${baseName}")
             if (!this.client.isRegistered(mBeanObject)) {
-                throw new ArtifactStopException("Failed to stop artifact ${artifact.name} due to: Artifact is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
+                throw new ArtifactRestartException("Failed to restart artifact ${baseName} due to: Artifact is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
             }
             ApplicationMBean applicationMBean = JMX.newMBeanProxy(this.client, mBeanObject, ApplicationMBean.class)
-            applicationMBean.stop()
+            applicationMBean.restart()
 
+        } catch (ArtifactRestartException exception) {
+            throw exception
+        } catch (Exception exception) {
+            throw new ArtifactRestartException("Failed to restart artifact ${baseName} due to: ${exception.getMessage()}")
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    void stopArtifact(Artifact artifact) throws ArtifactStopException {
+        try {
+            this.stopArtifact(artifact.baseName)
         } catch (ArtifactStopException exception) {
             throw exception
         } catch (Exception exception) {
@@ -107,16 +126,72 @@ abstract class AbstractJMXDeployStrategy implements IDeployStrategy {
 
     /** {@inheritDoc} */
     @Override
-    boolean isArtifactInstalled(Artifact artifact) throws ArtifactGenericException {
+    void stopArtifact(String baseName) throws ArtifactStopException {
         try {
-            ObjectName mBeanObject = new ObjectName("${Bean.APPLICATION.toString()}${artifact.baseName}")
-            return this.client.isRegistered(mBeanObject)
+            ObjectName mBeanObject = new ObjectName("${Bean.APPLICATION.toString()}${baseName}")
+            if (!this.client.isRegistered(mBeanObject)) {
+                throw new ArtifactStopException("Failed to stop artifact ${baseName} due to: Artifact is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
+            }
+            ApplicationMBean applicationMBean = JMX.newMBeanProxy(this.client, mBeanObject, ApplicationMBean.class)
+            applicationMBean.stop()
+
+        } catch (ArtifactStopException exception) {
+            throw exception
         } catch (Exception exception) {
-            throw new ArtifactGenericException("Failed to obtain information about artifact ${artifact.name} due to: ${exception.getMessage()}")
+            throw new ArtifactStopException("Failed to stop artifact ${baseName} due to: ${exception.getMessage()}")
         }
     }
 
     /** {@inheritDoc} */
+    @Override
+    boolean isArtifactInstalled(Artifact artifact) throws ArtifactGenericException {
+        try {
+            return this.isArtifactInstalled(artifact.baseName)
+        } catch (Exception exception) {
+            throw new ArtifactGenericException("Failed to obtain information about artifact ${artifact.baseName} due to: ${exception.getMessage()}")
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    boolean isArtifactInstalled(String baseName) throws ArtifactGenericException {
+        try {
+            ObjectName mBeanObject = new ObjectName("${Bean.APPLICATION.toString()}${baseName}")
+            return this.client.isRegistered(mBeanObject)
+        } catch (Exception exception) {
+            throw new ArtifactGenericException("Failed to obtain information about artifact ${baseName} due to: ${exception.getMessage()}")
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    State getArtifactState(Artifact artifact) throws ArtifactGenericException {
+        try {
+            return this.getArtifactState(artifact.baseName)
+        } catch (Exception exception) {
+            throw new ArtifactGenericException("Failed to check state of ${artifact.baseName} due to: ${exception.getMessage()}")
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    State getArtifactState(String baseName) throws ArtifactGenericException {
+        try {
+            ObjectName mBeanObject = new ObjectName("${Bean.APPLICATION.toString()}${baseName}")
+            if (!this.client.isRegistered(mBeanObject)) {
+                throw new ArtifactGenericException("Failed to check state of ${baseName} due to: Artifact is not registered on the Liberty Profile on hostname ${this.profile.hostname} and port ${this.profile.port}")
+            }
+
+            ApplicationMBean applicationMBean = JMX.newMBeanProxy(this.client, mBeanObject, ApplicationMBean.class)
+            return State.valueOf(applicationMBean.state)
+
+        } catch (ArtifactGenericException exception) {
+            throw exception
+        } catch (Exception exception) {
+            throw new ArtifactGenericException("Failed to check state of ${baseName} due to: ${exception.getMessage()}")
+        }
+    }
+/** {@inheritDoc} */
     @Override
     List<String> getInstalledArtifacts() throws PackageException {
         try {
