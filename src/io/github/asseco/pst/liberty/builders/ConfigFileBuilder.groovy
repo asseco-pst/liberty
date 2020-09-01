@@ -4,8 +4,6 @@ import io.github.asseco.pst.liberty.exceptions.BuilderException
 import io.github.asseco.pst.liberty.models.Artifact
 import org.w3c.dom.Document
 import org.w3c.dom.Element
-import org.w3c.dom.Node
-import org.w3c.dom.NodeList
 
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.transform.OutputKeys
@@ -31,36 +29,11 @@ class ConfigFileBuilder {
             serverRootElement.appendChild(fillApplicationConfiguration(artifactConfigProperties, artifact, deploymentPath))
 
             artifactConfigProperties.appendChild(serverRootElement)
-            return generateConfigFile(artifactConfigProperties, "${artifact.baseName}.xml")
+            return generateConfigFile(artifactConfigProperties, artifact)
 
         } catch (Exception exception) {
             throw new BuilderException("Could not build the configuration file due to: ${exception.getMessage()}")
         }
-    }
-
-    static File updateArtifactConfigFileAttribute(File artifactConfigFile, String tagName, String attribute, String value) throws BuilderException {
-        Document artifactConfigDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(artifactConfigFile)
-        NodeList nodes = artifactConfigDocument.getElementsByTagName(tagName)
-
-        for (int idx = 0; idx < nodes.length; idx++) {
-            Node node = nodes.item(idx).getAttributes().getNamedItem(attribute)
-            node.setNodeValue(value)
-        }
-
-        return generateConfigFile(artifactConfigDocument, artifactConfigFile.name)
-    }
-
-    static File generateConfigFile(Document configDocument, String name) {
-        File artifactConfigFile = new File(name)
-
-        Transformer transformer = TransformerFactory.newInstance().newTransformer()
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes")
-
-        DOMSource source = new DOMSource(configDocument)
-        StreamResult outputFile = new StreamResult(artifactConfigFile)
-        transformer.transform(source, outputFile)
-
-        return artifactConfigFile
     }
 
     private static Element fillApplicationConfiguration(Document document, Artifact artifact, String deploymentPath) {
@@ -75,5 +48,18 @@ class ConfigFileBuilder {
         /*End*/
 
         return artifactNode
+    }
+
+    private static File generateConfigFile(Document configDocument, Artifact artifact) {
+        File artifactConfigFile = new File("${artifact.baseName}.xml")
+
+        Transformer transformer = TransformerFactory.newInstance().newTransformer()
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes")
+
+        DOMSource source = new DOMSource(configDocument)
+        StreamResult outputFile = new StreamResult(artifactConfigFile)
+        transformer.transform(source, outputFile)
+
+        return artifactConfigFile
     }
 }

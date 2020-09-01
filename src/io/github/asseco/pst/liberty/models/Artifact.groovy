@@ -23,14 +23,6 @@ class Artifact {
         this.autoStart = autoStart
     }
 
-    Artifact(String sourcePath, String name, boolean autoStart = false) {
-        this.sourcePath = new File(sourcePath)
-        this.name = name
-        this.baseName = getBasename(this.name)
-        this.type = Type.valueOf(getExtension(this.name).toUpperCase())
-        this.autoStart = autoStart
-    }
-
     private static String getExtension(String filename) {
         if (filename.lastIndexOf(".") > 0) {
             return filename.substring(filename.lastIndexOf(".") + 1)
