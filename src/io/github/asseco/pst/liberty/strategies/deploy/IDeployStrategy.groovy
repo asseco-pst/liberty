@@ -1,6 +1,7 @@
 package io.github.asseco.pst.liberty.strategies.deploy
 
 import io.github.asseco.pst.liberty.enums.Server
+import io.github.asseco.pst.liberty.enums.State
 import io.github.asseco.pst.liberty.exceptions.*
 import io.github.asseco.pst.liberty.models.Artifact
 import io.github.asseco.pst.liberty.models.Package
@@ -27,11 +28,25 @@ interface IDeployStrategy {
     void uninstallArtifact(Artifact artifact) throws ArtifactUninstallException
 
     /**
+     * Uninstalls the artifact from the Liberty profile
+     * @param baseName The artifact name
+     * @throws ArtifactUninstallException
+     */
+    void uninstallArtifact(String name) throws ArtifactUninstallException
+
+    /**
      * Starts the artifact on the Liberty profile
      * @param artifact
      * @throws ArtifactStartException
      */
     void startArtifact(Artifact artifact) throws ArtifactStartException
+
+    /**
+     * Starts the artifact on the Liberty profile
+     * @param baseName the artifact base name
+     * @throws ArtifactStartException
+     */
+    void startArtifact(String baseName) throws ArtifactStartException
 
     /**
      * Restarts the artifact on the Liberty profile
@@ -41,11 +56,40 @@ interface IDeployStrategy {
     void restartArtifact(Artifact artifact) throws ArtifactStopException
 
     /**
+     * Restarts the artifact on the Liberty profile
+     * @param baseName the artifact base name
+     * @throws ArtifactStopException
+     */
+    void restartArtifact(String baseName) throws ArtifactStopException
+
+    /**
      * Stops the artifact on the Liberty profile
      * @param artifact
      * @throws ArtifactStopException
      */
     void stopArtifact(Artifact artifact) throws ArtifactStopException
+
+    /**
+     * Stops the artifact on the Liberty profile
+     * @param baseName the artifact base name
+     * @throws ArtifactStopException
+     */
+    void stopArtifact(String baseName) throws ArtifactStopException
+
+    /**
+     * Updates the auto start configuration of the artifact
+     * @param artifact the artifact to be updated
+     * @throws ArtifactGenericException
+     */
+    void updateArtifactAutoStart(Artifact artifact) throws ArtifactGenericException
+
+    /**
+     * Updates the auto start configuration of the artifact
+     * @param baseName the artifact base name
+     * @param enableAutoStart if it should autostart or not
+     * @throws ArtifactGenericException
+     */
+    void updateArtifactAutoStart(String baseName, boolean enableAutoStart) throws ArtifactGenericException
 
     /**
      * Checks if the artifact is installed on the Liberty profile
@@ -54,6 +98,30 @@ interface IDeployStrategy {
      * @throws ArtifactGenericException
      */
     boolean isArtifactInstalled(Artifact artifact) throws ArtifactGenericException
+
+    /**
+     * Checks if the artifact is installed on the Liberty profile
+     * @param baseName the artifact base name
+     * @return
+     * @throws ArtifactGenericException
+     */
+    boolean isArtifactInstalled(String baseName) throws ArtifactGenericException
+
+    /**
+     * Gets the artifact state from Liberty
+     * @param artifact
+     * @return the artifact state
+     * @throws ArtifactGenericException
+     */
+    State getArtifactState(Artifact artifact) throws ArtifactGenericException
+
+    /**
+     * Gets the artifact state from Liberty
+     * @param baseName the artifact base name
+     * @return the artifact state
+     * @throws ArtifactGenericException
+     */
+    State getArtifactState(String baseName) throws ArtifactGenericException
 
     /**
      * Gets a list of installed artifacts for the given package
