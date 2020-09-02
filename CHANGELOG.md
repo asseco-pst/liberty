@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## :arrow_forward: v0.0.2 <sup>2020-09-02</sup>
 ### Added
+- Updated deploy definitions
 - Added README.md
 - Added CHANGELOG.md
 - Added CONTRIBUTING.md
