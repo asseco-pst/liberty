@@ -203,10 +203,10 @@ abstract class AbstractJMXDeployStrategy implements IDeployStrategy {
             List artifacts = new ArrayList()
 
             FileServiceMXBean.MetaData[] dropinArtifacts = fileServiceMXBean.getDirectoryEntries(DROPINS_DEPLOYMENT_PATH, false, FileServiceMXBean.REQUEST_OPTIONS_ALL)
-            artifacts.addAll(dropinArtifacts)
+            artifacts.addAll(dropinArtifacts ?: [])
 
             FileServiceMXBean.MetaData[] customArtifacts = fileServiceMXBean.getDirectoryEntries(CUSTOM_DEPLOYMENT_PATH, false, FileServiceMXBean.REQUEST_OPTIONS_ALL)
-            artifacts.addAll(customArtifacts)
+            artifacts.addAll(customArtifacts ?: [])
 
             return artifacts.stream()
                     .map({ FileServiceMXBean.MetaData filteredArtifact ->
