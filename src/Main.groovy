@@ -14,7 +14,8 @@ class Main {
                     .setPackageName('hardware-manager')
                     .build()
 
-            installService.connect().installArtifact().await(2000).startArtifact()
+            installService.connect().getInstalledArtifacts()
+            installService.installArtifact().await(2000).startArtifact()
 
             System.out.println(installService.await(2000).getInstalledArtifacts().toString())
             System.out.println(installService.await(2000).getServerInformation().toString())
