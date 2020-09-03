@@ -39,16 +39,25 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['restConnector.jar'])
 }
 
-java {
-    withJavadocJar()
-    withSourcesJar()
+shadowJar {
+    classifier = ''
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        shadow(MavenPublication) {
             artifactId = 'liberty'
-            from components.java
+            project.shadow.component(it)
             pom {
                 name = 'liberty'
                 description = 'A library that allows managing artifacts in a Liberty server'
@@ -75,6 +84,8 @@ publishing {
                     developerConnection = 'scm:git://github.com/asseco-pst/liberty.git'
                 }
             }
+            artifact sourcesJar
+            artifact javadocJar
         }
     }
     repositories {
@@ -91,5 +102,5 @@ publishing {
 }
 
 signing {
-    sign publishing.publications.mavenJava
+    sign publishing.publications.shadow
 }
