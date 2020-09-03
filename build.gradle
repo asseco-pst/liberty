@@ -1,6 +1,7 @@
 plugins {
     id 'groovy'
     id 'java'
+    id 'com.github.johnrengelman.shadow' version "6.0.0"
     id 'maven-publish'
     id 'signing'
 }
@@ -30,10 +31,12 @@ sourceSets {
 
 dependencies {
     implementation 'org.codehaus.groovy:groovy:3.0.5'
-    // https://mvnrepository.com/artifact/net.wasdev.maven.tools.targets/liberty-apis
-    implementation 'net.wasdev.maven.tools.targets:liberty-apis:20.0.0.9'
-    // https://mvnrepository.com/artifact/com.ibm.websphere.appserver.api/com.ibm.websphere.appserver.api.restConnector/1.3.44
+    implementation 'com.ibm.websphere.appserver.api:com.ibm.websphere.appserver.api.basics:1.4.43'
+    implementation 'com.ibm.websphere.appserver.api:com.ibm.websphere.appserver.api.config:1.2.43'
+    implementation 'com.ibm.websphere.appserver.api:com.ibm.websphere.appserver.api.endpoint:1.0.43'
+    implementation 'com.ibm.websphere.appserver.api:com.ibm.websphere.appserver.api.kernel.service:1.0.43'
     implementation 'com.ibm.websphere.appserver.api:com.ibm.websphere.appserver.api.restConnector:1.3.44'
+    implementation fileTree(dir: 'libs', include: ['restConnector.jar'])
 }
 
 java {
