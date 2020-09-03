@@ -46,9 +46,8 @@ java {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifactId = 'liberty'
-            from components.java
+        shadow(MavenPublication) {
+            project.shadow.component(it)
             pom {
                 name = 'liberty'
                 description = 'A library that allows managing artifacts in a Liberty server'
@@ -75,6 +74,7 @@ publishing {
                     developerConnection = 'scm:git://github.com/asseco-pst/liberty.git'
                 }
             }
+
         }
     }
     repositories {
@@ -91,5 +91,5 @@ publishing {
 }
 
 signing {
-    sign publishing.publications.mavenJava
+    sign publishing.publications.shadow
 }
